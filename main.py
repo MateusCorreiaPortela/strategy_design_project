@@ -6,6 +6,11 @@ from services.via_cep import ViaCepService
 
 
 class Client:
+    def __init__(self):
+        self.context = Context()
+        self.brasil_api = BrasilApiService()
+        self.via_cep = ViaCepService()
+
     def main(self) -> None:
         while True:
             print(
@@ -20,10 +25,8 @@ class Client:
                 print("Volte sempre!", flush=True)
                 sys.exit()
 
-            Context(
-                strategy=self.get_service(number),
-                cep=str(input("CEP: "))
-            ).execute()
+            self.context.set_strategy(self.get_service(number=number))
+            self.context.execute(cep=str(input("CEP: ")))
 
     def get_number_service(self):
         while True:
@@ -31,6 +34,7 @@ class Client:
                 valor = int(input("Valor: "))
 
                 if valor not in [1, 2, 3]:
+                    print("Ta caindo aqui?")
                     raise ValueError("O valor deve ser válido")
 
                 break
@@ -42,11 +46,11 @@ class Client:
 
     def get_service(self, number: int):
         services = {
-            1: BrasilApiService,
-            2: ViaCepService,
+            1: self.brasil_api,
+            2: self.via_cep,
         }
 
-        return services[number]()
+        return services[number]
 
 
 if __name__ == "__main__":
